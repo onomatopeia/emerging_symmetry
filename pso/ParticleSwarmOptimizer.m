@@ -3,10 +3,7 @@ classdef ParticleSwarmOptimizer
     %   Detailed explanation goes here
     
     properties(Constant)
-        formatSpecTemplate = 'i=%s, J=%s, phi=(%s)\n';
-        iterationTemplate = '%d';
-        fitnessTemplate = '%4.4f';
-        positionTemplate = '%4.4f';
+        formatSpecTemplate = 'i=%d, J=%4.8f\n';
     end
     
     properties
@@ -21,7 +18,7 @@ classdef ParticleSwarmOptimizer
         swarmSize
         maxVelocity
         optimizationParams
-        formatSpec = ParticleSwarmOptimizer.positionTemplate;
+        formatSpec = ParticleSwarmOptimizer.formatSpecTemplate;
     end
     
     methods
@@ -36,14 +33,8 @@ classdef ParticleSwarmOptimizer
             obj.fitnessDelegate = fitnessDelegate;
             obj.maxVelocity = optimizationParams.maxVelocity;
             for i=1:obj.swarmSize
-                obj.swarm{i} = Particle(obj.spaceConstraints, fitnessDelegate, obj.maxVelocity);
-                obj.swarm{i} =
+                obj.swarm{i} = Particle(obj.spaceConstraints, fitnessDelegate, obj.maxVelocity, initialPosition);
             end
-            for i=1:length(obj.spaceConstraints)-1
-                obj.formatSpec = strcat(obj.formatSpec, ', ', ParticleSwarmOptimizer.positionTemplate);
-            end
-            obj.formatSpec = sprintf(ParticleSwarmOptimizer.formatSpecTemplate, ParticleSwarmOptimizer.iterationTemplate, ParticleSwarmOptimizer.fitnessTemplate, obj.formatSpec);
-            disp(obj.formatSpec);
         end
 
         function better = IsBetter(obj, fitnessAfter, fitnessBefore)
@@ -76,13 +67,14 @@ classdef ParticleSwarmOptimizer
                         end
                     end
                     % Choose the particle with the best fitness value of all the particles as the globalBest
+                    disp(currentParticle.personalBestFitness);
                     if (obj.IsBetter(currentParticle.personalBestFitness, obj.globalBestFitness))
                         obj.globalBestPosition = currentParticle.personalBestPosition;
                         obj.globalBestFitness = currentParticle.personalBestFitness;
                     end
                     obj.swarm{j} = currentParticle;
                 end
-                fprintf(obj.formatSpec, iteration, obj.globalBestFitness, obj.globalBestPosition);
+                fprintf(ParticleSwarmOptimizer.formatSpecTemplate, iteration, obj.globalBestFitness);
                 obj.fitnessDelegate.SavePartialResult(obj.globalBestPosition, iteration);
             end
             

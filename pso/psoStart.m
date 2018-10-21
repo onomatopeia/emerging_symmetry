@@ -3,11 +3,10 @@ sc = cell(1,3);
 sc{1} = SpaceConstraint(0.0, 1.0, 0.0001);  % red space
 sc{2} = SpaceConstraint(0.0, 1.0, 0.0001);  % green space 
 sc{3} = SpaceConstraint(0.0, 1.0, 0.0001);  % blue space
-params = OptimizationParams(sc, 8/256);
+params = OptimizationParams(sc, 0.25);
 % our objective is to minimize entropy difference
 params.objective = Objective.Minimize;
-params.swarmSize = 5;
-params.iterations = 10;
+params.iterations = 1;
 
 %% get an image that we want to optimize
 im_w = 32;
@@ -22,7 +21,7 @@ imshow(image);
 fd = FitnessDelegate(image, fullfile(pwd, 'results'));
 
 %% optimizer
-pso = ParticleSwarmOptimizer(params, fd);
+pso = ParticleSwarmOptimizer(params, fd, image);
 [a,b] = pso.Optimize();
 imshow(a);
 disp(b);
