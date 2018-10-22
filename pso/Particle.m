@@ -38,7 +38,10 @@ classdef Particle
             end
             % obj.UpdatePositions();  % this adds some modifications to the initial image we submitted to this constructor, as it would be boring if all particles had the same image in the first iteration.
             for i=1:obj.dimensions
-                obj.velocities(:,:,i) = Particle.velocityScale .* rand(size(obj.currentPosition,1), size(obj.currentPosition, 2)); %for each dimension set velocity
+                % a = 2.*sprand(size(obj.currentPosition,1), size(obj.currentPosition, 2),0.2);
+                % f = spfun(@(x) Particle.velocityScale * (x-1), a);
+                % obj.velocities(:,:,i) = full(f);
+                obj.velocities(:,:,i) = Particle.velocityScale .* (2 .* rand(size(obj.currentPosition,1), size(obj.currentPosition, 2)) - 1);
                 obj.currentPosition(:,:,i) = obj.ClipPosition(obj.currentPosition(:,:,i) + obj.velocities(:,:,i));
             end
             obj.currentFitness = obj.fitnessDelegate.EvaluateFitness(obj.currentPosition);
@@ -49,9 +52,7 @@ classdef Particle
         end
 
         function obj = UpdatePositions(obj)
-            % for each colour channel generate a random matrix with values within
             for i=1:obj.dimensions
-                obj.velocities(:,:,i) = Particle.velocityScale .* rand(size(obj.currentPosition,1), size(obj.currentPosition, 2)); %for each dimension set velocity
                 obj.currentPosition(:,:,i) = obj.ClipPosition(obj.currentPosition(:,:,i) + obj.velocities(:,:,i));
             end
             obj.currentFitness = obj.fitnessDelegate.EvaluateFitness(obj.currentPosition);
